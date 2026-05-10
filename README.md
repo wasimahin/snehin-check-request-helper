@@ -1,87 +1,123 @@
 # Snehin Check Request Helper
 
-A production Python desktop automation tool that eliminates manual data entry of vendor invoices into Microsoft Dynamics 365 Business Central.
-
-> **Built at Associated Students, Inc. — California State University, Long Beach**  
-> Deployed and running in production · March–April 2026
+> **Production Python RPA tool built for Associated Students, Inc. (ASI) at California State University, Long Beach.**  
+> Reduces invoice processing time by **~96%** — live in production with zero API integration.
 
 ---
 
-## The Problem
+## What It Does
 
-Every vendor invoice required opening a PDF, reading it, and manually typing every field into Business Central — vendor name, address, invoice number, account codes, line items — one field at a time, TAB-navigating through the ERP. **3–5 minutes per invoice. Error-prone. Repetitive.**
+The Snehin Check Request Helper is a desktop application that reads vendor invoice PDFs submitted through ASI's check request workflow, parses all relevant financial data from the document, validates it, and automatically enters it into **Microsoft Dynamics 365 Business Central** — field by field — through UI automation.
 
-## The Solution
+Previously, a staff member would manually read each invoice and type every field into Business Central. This tool eliminates that entirely.
 
-Snehin parses the PDF, extracts and normalizes all fields, validates the data, and enters everything into Business Central automatically via keystroke UI automation. No API. No ERP credentials required.
+**It is live in production at ASI CSULB today.**
 
-| | Before | After |
+---
+
+## Impact
+
+| Metric | Before | After |
 |---|---|---|
 | Time per invoice | 3–5 minutes | 3–10 seconds |
-| Reduction | — | **~96%** |
-| API required | — | None |
-| Validation | Manual | Pre-entry validation panel |
-| Status | — | **Live in production** |
+| Processing time reduction | — | **~96%** |
+| API / ERP credentials required | — | **None** |
+| Manual keystrokes per invoice | 200–400+ | ~3 (load, verify, run) |
 
 ---
 
 ## Features
 
-| Feature | Description |
-|---|---|
-| PDF Parsing | pdfplumber + PyMuPDF extract vendor details, account codes, line items, and totals from real-world inconsistently formatted invoices |
-| Account Code Normalization | Deterministic mapping (e.g. `370-XXXX-0X` to Account 2850 + Code `AXXXX-X`) |
-| Pre-entry Validation Panel | Flags anomalies before any data touches the ERP |
-| Duplicate Invoice Detection | Persistent invoice history log prevents double entries |
-| CSV Audit Trail | Every entry logged for accounting compliance |
-| One-click File Rename | Stamps PDF with business unit, vendor, date, and user |
-| Dark-mode GUI | Built with CustomTkinter — designed for non-technical financial staff |
-| Page-1-only Parsing | Prevents data bleed from attached multi-page invoices |
-| Zero API Required | Operates entirely through UI automation, no ERP credentials needed |
+- **PDF Parsing** — Extracts vendor name, invoice number, date, line items, and totals from check request PDFs using layout-preserving extraction (`pdfplumber`, `PyMuPDF`)
+- **Duplicate Detection** — Flags invoices that have already been entered to prevent double-processing
+- **Account Code Normalization** — Cleans and standardizes GL account codes before entry
+- **Pre-Entry Validation Panel** — Displays all parsed fields for staff review before any automation runs
+- **One-Click PDF Rename Workflow** — Renames the source file to a standardized naming convention after successful entry
+- **CSV Audit Trail** — Exports a log of every processed invoice for reconciliation and audit purposes
+- **Custom Dark-Mode GUI** — Steam/Discord-inspired dark interface built for non-technical staff
+- **Live Status Log** — Color-coded in-app activity log for every parse, entry, and error event
+- **Hotkey Trigger** — ALT+F8 starts or stops Business Central entry from anywhere on screen
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
+| Layer | Tools |
 |---|---|
-| Language | Python 3.13 |
-| PDF Extraction | pdfplumber, PyMuPDF (fitz) |
-| UI Automation | pyautogui, keyboard |
-| GUI Framework | CustomTkinter |
-| ERP Target | Microsoft Dynamics 365 Business Central |
-| Date Handling | python-dateutil |
-| Clipboard | pyperclip |
-| Image Processing | Pillow |
+| Language | Python 3.11+ |
+| UI Framework | `customtkinter` (dark theme) |
+| PDF Parsing | `pdfplumber`, `PyMuPDF (fitz)`, `pypdf` |
+| UI Automation | `pyautogui`, `keyboard` |
+| Clipboard | `pyperclip` |
+| Image Rendering | `Pillow` |
+| Target System | Microsoft Dynamics 365 Business Central |
 
 ---
 
-## Impact Metrics
+## Business Central Entry Flow
 
-- **~96%** processing time reduction — 3–5 minutes down to 3–10 seconds per invoice
-- **Zero** API integrations required — pure UI automation
-- **100%** deterministic — same parsing and normalization rules applied every time
-- Handles **multi-line invoices** with automatic account code normalization
-- Used daily by **non-technical financial staff** with zero training required
+For each parsed invoice, the bot executes this sequence automatically:
+
+```
+Vendor Name → [TAB] → Invoice Number → [TAB] → Invoice Date → [TAB]
+→ GL Account → [TAB] → Department → [TAB] → Amount → [TAB]
+→ Description → [TAB] → ... (configurable field order)
+```
 
 ---
 
-## Project Background
+## How to Run
 
-This tool was born from a real operational bottleneck. As Lead Business Office Representative at ASI CSULB, I noticed that check request processing consumed a significant portion of the team's time — not because the work was complex, but because it was entirely manual and repetitive.
+**Requirements:** Python 3.11 or newer, Windows
 
-The solution required:
-- Reverse-engineering the exact TAB/ENTER navigation sequence Business Central requires
-- Writing robust PDF parsers that handle real-world formatting inconsistencies
-- Building a validation layer so errors are caught before they reach the ERP
-- Designing a UI that non-technical staff could use without any training
+```bash
+# Clone the repo
+git clone https://github.com/wasimahin/snehin-check-request-helper.git
+cd snehin-check-request-helper
+
+# Run the launcher (installs dependencies automatically)
+run.bat
+```
+
+The launcher detects your Python installation, verifies the version, auto-installs all required libraries, and launches the app.
+
+**Manual install:**
+```bash
+pip install customtkinter pdfplumber pyautogui pyperclip pymupdf pillow pypdf keyboard
+python snehin_bot.py
+```
+
+---
+
+## Hotkeys
+
+| Key | Action |
+|---|---|
+| `ALT+F8` | Start / Stop BC entry |
+
+---
+
+## Troubleshooting
+
+| Issue | Check |
+|---|---|
+| App doesn't open | `startup_error.log` |
+| Parsing fails | `snehin_errors.log` |
+| ALT+F8 not working | Install `keyboard` package; run as admin if needed |
+| Wrong field populated | Adjust field tab order in Settings |
+
+---
+
+## Project Context
+
+Built independently as part of my role as **Lead Business Office Representative at ASI CSULB**, where I oversee financial documentation for 500+ registered campus organizations. This tool is one of two production Python automation systems I engineered for the office — the other being the **[BC Journal Entry Bot](https://github.com/wasimahin/bc-journal-entry-bot)**.
+
+Both tools run live with zero API integration, operating entirely through UI automation against Microsoft Dynamics 365 Business Central.
 
 ---
 
 ## Author
 
 **Wasi Mahin**  
-Dual-major in MIS & Accountancy — California State University, Long Beach  
-GPA: 3.87 · President's List every semester
-
-[LinkedIn](https://linkedin.com/in/wasi-mahin) · [Portfolio](https://datacamp.com/portfolio/wasimahin)
+Dual-Major: Management Information Systems & Accountancy | CSULB  
+[LinkedIn](https://linkedin.com/in/wasi-mahin) · [GitHub](https://github.com/wasimahin) · wasimahin@gmail.com
