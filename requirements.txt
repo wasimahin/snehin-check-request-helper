@@ -1,0 +1,42 @@
+SNEHIN CHECK REQUEST HELPER — V3.0.0
+================================================================================
+
+INSTALL (once):
+  py -3.13 -m pip install pdfplumber pyautogui pyperclip pillow keyboard pymupdf
+
+NOTE: customtkinter is NOT required.
+
+LAUNCH:
+  py -3.13 app.py   OR   double-click run_app.bat
+
+WHAT'S NEW IN V3.0.0
+────────────────────
+UI / UX
+  · All extracted fields are now editable — click into any field, type to fix
+  · Text selection and copy (Ctrl+C) work in all fields natively
+  · Two-column field grid with cascading gold shimmer animation on PDF load
+  · Rotating spinner in preview panel during parse
+  · Pulsing status dot (sinusoidal, 1.2 s period) while automation runs
+  · Validation badges flash their semantic colour on update
+  · Inline treeview editing — double-click any line-item cell to edit
+  · ↺ Reset button restores all fields to last parsed values
+  · Button layout: action buttons (BC Entry, Vendor Entry, Export, Log, F8)
+    on the LEFT; file buttons (Browse, Open PDF, Rename, Print, Rename+Print)
+    on the RIGHT of the file bar
+  · "A Project by Wasi Mahin" prominently displayed in header (italic gold)
+    and footer
+
+Hotkeys
+  · F8        → BC Entry   (was already F8)
+  · Alt+F8    → Vendor Entry  IMMEDIATE — no delay, no popup
+  · Vendor Entry button also fires immediately
+
+New buttons
+  · Rename+Print — renames the PDF first, then prints the renamed file
+
+Parser (core)
+  · vendor_invoice_no now uses the extracted invoice number when available
+    (e.g., "59301638", "07-2221133") instead of always formatting the date.
+    Falls back to YYMMDD date format only when no invoice number is found.
+  · Row-grouping scanner — handles multi-word invoice numbers like "07 - 2221133"
+    that pdfplumber splits into separate tokens
