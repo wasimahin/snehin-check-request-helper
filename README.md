@@ -36,7 +36,7 @@ Previously, a staff member would manually read each invoice and type every field
 - **CSV Audit Trail** — Exports a log of every processed invoice for reconciliation and audit purposes
 - **Custom Dark-Mode GUI** — Steam/Discord-inspired dark interface built for non-technical staff
 - **Live Status Log** — Color-coded in-app activity log for every parse, entry, and error event
-- **Hotkey Trigger** — ALT+F8 starts or stops Business Central entry from anywhere on screen
+- **Hotkeys** — F8 runs Business Central entry and Alt+F8 runs vendor entry, from anywhere on screen
 
 ---
 
@@ -44,11 +44,10 @@ Previously, a staff member would manually read each invoice and type every field
 
 | Layer | Tools |
 |---|---|
-| Language | Python 3.11+ |
-| UI Framework | `customtkinter` (dark theme) |
-| PDF Parsing | `pdfplumber`, `PyMuPDF (fitz)`, `pypdf` |
+| Language | Python 3.13 (checked at start-up) |
+| UI Framework | `tkinter` (standard library), custom dark theme |
+| PDF Parsing | `pdfplumber`, `PyMuPDF (fitz)` |
 | UI Automation | `pyautogui`, `keyboard` |
-| Clipboard | `pyperclip` |
 | Image Rendering | `Pillow` |
 | Target System | Microsoft Dynamics 365 Business Central |
 
@@ -68,24 +67,22 @@ Vendor Name → [TAB] → Invoice Number → [TAB] → Invoice Date → [TAB]
 
 ## How to Run
 
-**Requirements:** Python 3.11 or newer, Windows
+**Requirements:** Windows and **Python 3.13**. `app.py` checks the version at start-up and exits on any other.
 
 ```bash
 # Clone the repo
 git clone https://github.com/wasimahin/snehin-check-request-helper.git
 cd snehin-check-request-helper
 
-# Run the launcher (installs dependencies automatically)
-run.bat
+# Install the dependencies (once)
+py -3.13 -m pip install pdfplumber pymupdf pillow pyautogui keyboard
+
+# Launch
+run_app.bat
 ```
 
-The launcher detects your Python installation, verifies the version, auto-installs all required libraries, and launches the app.
-
-**Manual install:**
-```bash
-pip install customtkinter pdfplumber pyautogui pyperclip pymupdf pillow pypdf keyboard
-python snehin_bot.py
-```
+`run_app.bat` starts the app with `py -3.13 app.py`; you can run that command directly instead.
+`requirements.txt` holds the release notes, so install with the command above.
 
 ---
 
@@ -93,7 +90,10 @@ python snehin_bot.py
 
 | Key | Action |
 |---|---|
-| `ALT+F8` | Start / Stop BC entry |
+| `F8` | Run Business Central entry |
+| `Alt+F8` | Run vendor entry |
+
+Both work from anywhere on screen once global hotkeys are on (the **F8 ON** button toggles them).
 
 ---
 
@@ -101,10 +101,8 @@ python snehin_bot.py
 
 | Issue | Check |
 |---|---|
-| App doesn't open | `startup_error.log` |
-| Parsing fails | `snehin_errors.log` |
-| ALT+F8 not working | Install `keyboard` package; run as admin if needed |
-| Wrong field populated | Adjust field tab order in Settings |
+| App doesn't open | Use Python 3.13 (`py -3.13 app.py`); errors are written to `last_error.log` |
+| F8 / Alt+F8 not working | Install the `keyboard` package; run as admin if needed |
 
 ---
 
